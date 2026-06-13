@@ -32,6 +32,10 @@ services:
         &sessionVariables=sql_mode=''
       DATABASE_USER: traccar
       DATABASE_PASSWORD: traccar
+      # --- China / Amap (Gaode) configuration ---
+      COORDINATE_TRANSFORM_ENABLE: "true"
+      COORDINATE_TRANSFORM_TYPE: "wgs84ToGcj02"
+      # MAP_AMAP_KEY: "your_amap_js_api_key_here"
     healthcheck:
       test: [ "CMD", "wget", "-q", "--spider", "http://localhost:8082/api/health" ]
       interval: 2m
@@ -43,6 +47,7 @@ services:
       - "5000-5500:5000-5500"
     volumes:
       - /opt/traccar/logs:/opt/traccar/logs
+      - /opt/traccar/override:/opt/traccar/override
 
   autoheal:
     image: willfarrell/autoheal:latest

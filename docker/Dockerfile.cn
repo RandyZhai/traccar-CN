@@ -1,0 +1,13 @@
+# Build: Chinese-customized Traccar image
+# Starts from official image, overlays modified jars and migrations
+
+FROM traccar/traccar:latest
+
+# Overlay modified tracker-server.jar with coordinate transform handler
+COPY target/tracker-server.jar /opt/traccar/tracker-server.jar
+
+# Overlay modified dependency jars
+COPY target/lib /opt/traccar/lib
+
+# Overlay Liquibase changelogs with Amap default map migration
+COPY schema/ /opt/traccar/schema/

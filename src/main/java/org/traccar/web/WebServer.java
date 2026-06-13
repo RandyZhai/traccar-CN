@@ -156,7 +156,7 @@ public class WebServer implements LifecycleObject {
 
         FilterHolder filterHolder = new FilterHolder(new OverrideFileFilter());
         filterHolder.setInitParameter("overridePath", overrideReal.toString());
-        servletHandler.addFilter(filterHolder, "/*", EnumSet.of(DispatcherType.REQUEST));
+        servletHandler.addFilter(filterHolder, "/*", EnumSet.of(DispatcherType.REQUEST, DispatcherType.FORWARD));
 
         servletHandler.setWelcomeFiles(new String[] {"index.html"});
     }

@@ -31,6 +31,7 @@ public final class CoordinateUtil {
 
     private static final double RADIUS = 6378245.0;
     private static final double CORRECTION_PARAM = 0.00669342162296594323;
+    private static final double X_PI = Math.PI * 3000.0 / 180.0;
 
     public record Coordinate(double latitude, double longitude) {
     }
@@ -38,6 +39,64 @@ public final class CoordinateUtil {
     public static Coordinate wgs84ToGcj02(double latitude, double longitude) {
         Coordinate offset = offset(latitude, longitude);
         return new Coordinate(latitude + offset.latitude(), longitude + offset.longitude());
+    }
+
+    /**
+     * Convert GCJ-02 (Mars coordinates) to WGS-84 using iterative approximation.
+     * Typically converges within 2-3 iterations to sub-meter accuracy.
+     */
+    public static Coordinate gcj02ToWgs84(double latitude, double longitude) {
+        double wgsLat = latitude;
+        double wgsLon = longitude;
+        for (int i = 0; i < 6; i++) {
+            Coordinate test = wgs84ToGcj02(wgsLat, wgsLon);
+            double deltaLat = test.latitude() - latitude;
+            double deltaLon = test.longitude() - longitude;
+            if (Math.abs(deltaLat) < 1e-7 && Math.abs(deltaLon) < 1e-7) {
+                break;
+            }
+            wgsLat -= deltaLat;
+            wgsLon -= deltaLon;
+        }
+        return new Coordinate(wgsLat, wgsLon);
+    }
+
+    /**
+     * Convert GCJ-02 to BD-09 (Baidu coordinate system).
+     */
+    public static Coordinate gcj02ToBd09(double latitude, double longitude) {
+        double x = longitude;
+        double y = latitude;
+        double z = Math.sqrt(x * x + y * y) + 0.00002 * Math.sin(y * X_PI);
+        double theta = Math.atan2(y, x) + 0.000003 * Math.cos(x * X_PI);
+        return new Coordinate(z * Math.sin(theta) + 0.006, z * Math.cos(theta) + 0.0065);
+    }
+
+    /**
+     * Convert BD-09 to GCJ-02.
+     */
+    public static Coordinate bd09ToGcj02(double latitude, double longitude) {
+        double x = longitude - 0.0065;
+        double y = latitude - 0.006;
+        double z = Math.sqrt(x * x + y * y) - 0.00002 * Math.sin(y * X_PI);
+        double theta = Math.atan2(y, x) - 0.000003 * Math.cos(x * X_PI);
+        return new Coordinate(z * Math.sin(theta), z * Math.cos(theta));
+    }
+
+    /**
+     * Convert WGS-84 to BD-09 (WGS-84 → GCJ-02 → BD-09).
+     */
+    public static Coordinate wgs84ToBd09(double latitude, double longitude) {
+        Coordinate gcj02 = wgs84ToGcj02(latitude, longitude);
+        return gcj02ToBd09(gcj02.latitude(), gcj02.longitude());
+    }
+
+    /**
+     * Convert BD-09 to WGS-84 (BD-09 → GCJ-02 → WGS-84).
+     */
+    public static Coordinate bd09ToWgs84(double latitude, double longitude) {
+        Coordinate gcj02 = bd09ToGcj02(latitude, longitude);
+        return gcj02ToWgs84(gcj02.latitude(), gcj02.longitude());
     }
 
     private static Coordinate offset(double latitude, double longitude) {

@@ -2617,6 +2617,18 @@ components:
           type: string
           nullable: true
           description: External POI layer configured for the user
+        amapKey:
+          type: string
+          nullable: true
+          description: Amap (Gaode) JavaScript API key for map display
+        baiduKey:
+          type: string
+          nullable: true
+          description: Baidu Map JavaScript API key for map display
+        tencentKey:
+          type: string
+          nullable: true
+          description: Tencent Map JavaScript API key for map display
         attributes:
           type: object
           description: Additional custom user attributes
@@ -2646,6 +2658,15 @@ components:
         bingKey:
           type: string
           description: Bing Maps API key used when Bing is selected as a provider
+        amapKey:
+          type: string
+          description: Amap (Gaode) JavaScript API key for map display
+        baiduKey:
+          type: string
+          description: Baidu Map JavaScript API key for map display
+        tencentKey:
+          type: string
+          description: Tencent Map JavaScript API key for map display
         mapUrl:
           type: string
           description: Custom tile server URL template if configured

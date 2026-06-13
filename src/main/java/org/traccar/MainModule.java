@@ -80,6 +80,7 @@ import org.traccar.geolocation.GoogleGeolocationProvider;
 import org.traccar.geolocation.OpenCellIdGeolocationProvider;
 import org.traccar.geolocation.UniversalGeolocationProvider;
 import org.traccar.geolocation.UnwiredGeolocationProvider;
+import org.traccar.handler.CoordinateTransformHandler;
 import org.traccar.handler.CopyAttributesHandler;
 import org.traccar.handler.FilterHandler;
 import org.traccar.handler.GeocoderHandler;
@@ -345,6 +346,15 @@ public class MainModule extends AbstractModule {
     public static CopyAttributesHandler provideCopyAttributesHandler(Config config, CacheManager cacheManager) {
         if (config.getBoolean(Keys.PROCESSING_COPY_ATTRIBUTES_ENABLE)) {
             return new CopyAttributesHandler(cacheManager);
+        }
+        return null;
+    }
+
+    @Singleton
+    @Provides
+    public static CoordinateTransformHandler provideCoordinateTransformHandler(Config config) {
+        if (config.getBoolean(Keys.COORDINATE_TRANSFORM_ENABLE)) {
+            return new CoordinateTransformHandler(config);
         }
         return null;
     }

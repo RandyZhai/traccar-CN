@@ -1788,6 +1788,24 @@ public final class Keys {
             List.of(KeyType.CONFIG));
 
     /**
+     * Enable coordinate system conversion in the processing pipeline. When enabled, incoming position coordinates
+     * are converted according to the type specified by 'coordinate.transform.type'. Default is disabled.
+     */
+    public static final ConfigKey<Boolean> COORDINATE_TRANSFORM_ENABLE = new BooleanConfigKey(
+            "coordinate.transform.enable",
+            List.of(KeyType.CONFIG));
+
+    /**
+     * Coordinate conversion type. Supported values: "wgs84ToGcj02", "gcj02ToWgs84", "wgs84ToBd09", "bd09ToWgs84".
+     * WGS-84 is the standard GPS coordinate system used internationally. GCJ-02 (Mars coordinates) is used by
+     * Gaode, Tencent, and other Chinese map providers. BD-09 is used by Baidu Maps.
+     * Only takes effect when 'coordinate.transform.enable' is true.
+     */
+    public static final ConfigKey<String> COORDINATE_TRANSFORM_TYPE = new StringConfigKey(
+            "coordinate.transform.type",
+            List.of(KeyType.CONFIG));
+
+    /**
      * Enable saving device IP address information. Disabled by default.
      */
     public static final ConfigKey<Boolean> PROCESSING_REMOTE_ADDRESS_ENABLE = new BooleanConfigKey(
@@ -1958,6 +1976,30 @@ public final class Keys {
     public static final ConfigKey<String> MAP_MATCHER_KEY = new StringConfigKey(
             "mapMatcher.key",
             List.of(KeyType.CONFIG));
+
+    /**
+     * Amap (Gaode) JavaScript API key for map display in the web interface. Can be configured at the server
+     * level as a default for all users.
+     */
+    public static final ConfigKey<String> MAP_AMAP_KEY = new StringConfigKey(
+            "map.amapKey",
+            List.of(KeyType.CONFIG, KeyType.SERVER));
+
+    /**
+     * Baidu Map JavaScript API key for map display in the web interface. Can be configured at the server
+     * level as a default for all users.
+     */
+    public static final ConfigKey<String> MAP_BAIDU_KEY = new StringConfigKey(
+            "map.baiduKey",
+            List.of(KeyType.CONFIG, KeyType.SERVER));
+
+    /**
+     * Tencent Map JavaScript API key for map display in the web interface. Can be configured at the server
+     * level as a default for all users.
+     */
+    public static final ConfigKey<String> MAP_TENCENT_KEY = new StringConfigKey(
+            "map.tencentKey",
+            List.of(KeyType.CONFIG, KeyType.SERVER));
 
     /**
      * Boolean flag to enable LBS location resolution. Some devices send cell tower information and Wi-Fi points when

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd"
+  logicalFilePath="changelog-6.14.0">
+
+  <changeSet author="author" id="changelog-6.14.0">
+    <preConditions onFail="MARK_RAN">
+      <sqlCheck expectedResult="0">
+        SELECT COUNT(*) FROM tc_servers WHERE map IS NOT NULL AND map != ''
+      </sqlCheck>
+    </preConditions>
+    <update tableName="tc_servers">
+      <column name="map" value="amap" />
+      <where>map IS NULL OR map = ''</where>
+    </update>
+    <update tableName="tc_servers">
+      <column name="latitude" valueNumeric="35.0" />
+      <column name="longitude" valueNumeric="105.0" />
+      <column name="zoom" valueNumeric="4" />
+      <where>latitude = 0 AND longitude = 0</where>
+    </update>
+  </changeSet>
+
+</databaseChangeLog>
