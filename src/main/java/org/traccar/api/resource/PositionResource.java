@@ -16,6 +16,7 @@
 package org.traccar.api.resource;
 
 import org.traccar.api.BaseResource;
+import org.traccar.api.TrackJsonWriter;
 import org.traccar.helper.model.PositionUtil;
 import org.traccar.model.Device;
 import org.traccar.model.Geofence;
@@ -65,8 +66,11 @@ public class PositionResource extends BaseResource {
     @Inject
     private GpxExportProvider gpxExportProvider;
 
+    @Inject
+    private TrackJsonWriter trackJsonWriter;
+
     @GET
-    public Stream<Position> getJson(
+    public Response getJson(
             @QueryParam("deviceId") long deviceId, @QueryParam("id") List<Long> positionIds,
             @QueryParam("geofenceId") long geofenceId, @QueryParam("from") Date from, @QueryParam("to") Date to)
             throws StorageException {
@@ -78,24 +82,30 @@ public class PositionResource extends BaseResource {
                 permissionsService.checkPermission(Device.class, getUserId(), position.getDeviceId());
                 positions.add(position);
             }
-            return positions.stream();
+            return Response.ok(positions).build();
         } else if (deviceId > 0) {
             permissionsService.checkPermission(Device.class, getUserId(), deviceId);
             if (from != null && to != null) {
                 permissionsService.checkRestriction(getUserId(), UserRestrictions::getDisableReports);
 
-                Geofence geofence = geofenceId == 0 ? null : storage.getObject(Geofence.class, new Request(
+                if (geofenceId == 0) {
+                    StreamingOutput stream = output ->
+                            trackJsonWriter.writeTrack(deviceId, from, to, output);
+                    return Response.ok(stream).build();
+                }
+
+                Geofence geofence = storage.getObject(Geofence.class, new Request(
                         new Columns.All(), new Condition.Equals("id", geofenceId)));
 
-                return PositionUtil.getPositionsStream(storage, deviceId, from, to,
+                return Response.ok(PositionUtil.getPositionsStream(storage, deviceId, from, to,
                                 PositionUtil.TRACK_COLUMNS)
-                        .filter(position -> geofence == null || geofence.containsPosition(position));
+                        .filter(position -> geofence.containsPosition(position))).build();
             } else {
-                return storage.getObjectsStream(Position.class, new Request(
-                        new Columns.All(), new Condition.LatestPositions(deviceId)));
+                return Response.ok(storage.getObjectsStream(Position.class, new Request(
+                        new Columns.All(), new Condition.LatestPositions(deviceId)))).build();
             }
         } else {
-            return PositionUtil.getLatestPositions(storage, getUserId()).stream();
+            return Response.ok(PositionUtil.getLatestPositions(storage, getUserId())).build();
         }
     }
 
