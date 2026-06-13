@@ -65,7 +65,8 @@ public class GpxExportProvider {
         writer.writeCharacters(device.getName());
         writer.writeEndElement();
         writer.writeStartElement("trkseg");
-        try (Stream<Position> positions = PositionUtil.getPositionsStream(storage, deviceId, from, to)
+        try (Stream<Position> positions = PositionUtil.getPositionsStream(storage, deviceId, from, to,
+                        new Columns.Include("id", "deviceId", "latitude", "longitude", "altitude", "fixTime"))
                 .filter(position -> geofence == null || geofence.containsPosition(position))) {
             for (var iterator = positions.iterator(); iterator.hasNext();) {
                 Position position = iterator.next();

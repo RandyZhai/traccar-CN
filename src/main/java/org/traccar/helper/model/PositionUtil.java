@@ -73,10 +73,18 @@ public final class PositionUtil {
         return Stream.concat(extraStream, positions);
     }
 
+    public static final Columns TRACK_COLUMNS = new Columns.Include(
+            "id", "deviceId", "latitude", "longitude", "speed", "course", "fixTime", "valid", "address");
+
     public static Stream<Position> getPositionsStream(
             Storage storage, long deviceId, Date from, Date to) throws StorageException {
+        return getPositionsStream(storage, deviceId, from, to, new Columns.All());
+    }
+
+    public static Stream<Position> getPositionsStream(
+            Storage storage, long deviceId, Date from, Date to, Columns columns) throws StorageException {
         return storage.getObjectsStream(Position.class, new Request(
-                new Columns.All(),
+                columns,
                 new Condition.And(
                         new Condition.Equals("deviceId", deviceId),
                         new Condition.Between("fixTime", from, to)),

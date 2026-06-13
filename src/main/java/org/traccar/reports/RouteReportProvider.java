@@ -68,7 +68,8 @@ public class RouteReportProvider {
         return DeviceUtil.getAccessibleDevices(storage, userId, deviceIds, groupIds).stream()
                 .flatMap(device -> {
                     try {
-                        return PositionUtil.getPositionsStream(storage, device.getId(), from, to);
+                        return PositionUtil.getPositionsStream(storage, device.getId(), from, to,
+                                PositionUtil.TRACK_COLUMNS);
                     } catch (StorageException e) {
                         throw new RuntimeException(e);
                     }

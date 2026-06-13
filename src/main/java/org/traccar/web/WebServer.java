@@ -100,10 +100,10 @@ public class WebServer implements LifecycleObject {
 
         initWebApp(servletHandler);
 
-        Handler.Sequence handlers = new Handler.Sequence();
         initClientProxy(servletHandler);
-        handlers.addHandler(servletHandler);
-        handlers.addHandler(new CompressionHandler());
+
+        Handler.Sequence handlers = new Handler.Sequence();
+        handlers.addHandler(new CompressionHandler(servletHandler));
         server.setHandler(handlers);
 
         if (config.hasKey(Keys.WEB_REQUEST_LOG_PATH)) {

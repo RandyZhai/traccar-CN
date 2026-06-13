@@ -87,7 +87,8 @@ public class PositionResource extends BaseResource {
                 Geofence geofence = geofenceId == 0 ? null : storage.getObject(Geofence.class, new Request(
                         new Columns.All(), new Condition.Equals("id", geofenceId)));
 
-                return PositionUtil.getPositionsStream(storage, deviceId, from, to)
+                return PositionUtil.getPositionsStream(storage, deviceId, from, to,
+                                PositionUtil.TRACK_COLUMNS)
                         .filter(position -> geofence == null || geofence.containsPosition(position));
             } else {
                 return storage.getObjectsStream(Position.class, new Request(
